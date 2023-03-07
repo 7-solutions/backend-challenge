@@ -12,8 +12,8 @@
 จงหาค่าจากไฟล์ต่อไปนี้
 <https://github.com/7-solutions/backend-challenge/blob/main/files/hard.json>
 
-input = ```[[59], [73, 41], [52, 40, 53], [26, 53, 6, 34]]```
-output = ```237```
+input = `[[59], [73, 41], [52, 40, 53], [26, 53, 6, 34]]`
+output = `237`
 
 ## 2. จับฉันให้ได้สิ ซ้าย-ขวา-เท่ากับ
 
@@ -44,14 +44,14 @@ output = ```237```
 และให้แปลงกับเป็นตัวเลขชุด ที่มีผลรวมของทุกตัวเลข มีค่าน้อยที่สุด
 แสดงผลเป็น ตัวเลขชุด ชุดนั้น
 
-input = ```LLRR=```
-output = ```210122```
+input = `LLRR=`
+output = `210122`
 
 ## 3. พาย ไฟ ได - Pie Fire Dire  
 
 โจทย์คือ ให้รายชื่อของเนื้อหลายชนิด ปะปนกันเช่น
 
-Fatback t-bone t-bone, pastrami  ..   t-bone.  pork, meatloaf jowl enim.  Bresaola t-bone.
+```Fatback t-bone t-bone, pastrami  ..   t-bone.  pork, meatloaf jowl enim.  Bresaola t-bone.```
 
 `ทุกคำเป็นชื่อชนิดเนื้อทั้งหมด` โดยที่ไม่ต้องสนใจ , . หรือ space
 
@@ -59,9 +59,9 @@ Fatback t-bone t-bone, pastrami  ..   t-bone.  pork, meatloaf jowl enim.  Bresao
 
 ใช้ข้อความจาก <https://baconipsum.com/api/?type=meat-and-filler&paras=99&format=text>
 
-- Your project must use Go, Go module, and Echo framework (GRPC is plus)
+- Your project must use Go, Go module, and HTTP framework (GRPC is plus)
 - You create a JSON API at this endpoint /beef/summary
-- The JSON API must count number of beef
+- The JSON API must count the number of beef
 - We encourage you to write tests, which we will give you some extra score
 - We will give you an extra score if you focus on performance.
 
