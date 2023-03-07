@@ -2,8 +2,7 @@
 
 ## 1. จงหาเส้นทางที่มีค่ามากที่สุด
 
-<https://github.com/7-solutions/backend-challenge/blob/main/max-path.png>
-
+![Figure 1-1](files/max-path.png)
 
 - ซึ่งจะอยู่ใน Array ดังต่อไปนี้ [[59], [73, 41], [52, 40, 53], [26, 53, 6, 34]]
 - โดยเส้นทางที่มีค่ามากที่สุดจะเป็นตามจุดสีแดง
@@ -11,12 +10,13 @@
 - คำตอบให้อยู่ในรูปของ จำนวนรวมของเส้นทางที่ผ่าน ซึ่งจากตัวอย่างคือ 237
 
 จงหาค่าจากไฟล์ต่อไปนี้
-<https://github.com/7-solutions/backend-challenge/blob/main/hard.json>
+<https://github.com/7-solutions/backend-challenge/blob/main/files/hard.json>
 
 input = ```[[59], [73, 41], [52, 40, 53], [26, 53, 6, 34]]```
 output = ```237```
 
 ## 2. จับฉันให้ได้สิ ซ้าย-ขวา-เท่ากับ
+
 ให้ถอดรหัสตัวอักษรตามตัวอย่างด้านล่าง
 
 ```
@@ -51,7 +51,7 @@ output = ```210122```
 
 โจทย์คือ ให้รายชื่อของเนื้อหลายชนิด ปะปนกันเช่น
 
-Fatback t-bone t-bone, pastrami  ..   t-bone.  pork, meatloaf jowl enim.  Bresaola t-bone. 
+Fatback t-bone t-bone, pastrami  ..   t-bone.  pork, meatloaf jowl enim.  Bresaola t-bone.
 
 `ทุกคำเป็นชื่อชนิดเนื้อทั้งหมด` โดยที่ไม่ต้องสนใจ , . หรือ space
 
@@ -81,5 +81,3 @@ Fatback t-bone t-bone, pastrami  ..   t-bone.  pork, meatloaf jowl enim.  Bresao
     }
 }
 ```
-
-
