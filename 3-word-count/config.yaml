@@ -1,0 +1,6 @@
+external:
+  beef:
+    url: "https://baconipsum.com/api/?type=meat-and-filler&paras=99&format=text"
+
+app:
+  port: 80
