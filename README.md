@@ -11,8 +11,9 @@
 
 ให้เขียนโปรแกรมภาษา GO โดยใช้ input จากไฟล์นี้ <https://github.com/7-solutions/backend-challenge/blob/main/files/hard.json> และแสดงผลเป็นค่าที่ได้จากการคำนวณ
 
-input = `[[59], [73, 41], [52, 40, 53], [26, 53, 6, 34]]`
-output = `237`
+# Test case
+- input = `[[59], [73, 41], [52, 40, 53], [26, 53, 6, 34]]` output = `237`
+- input = <https://github.com/7-solutions/backend-challenge/blob/main/files/hard.json> output = `7273`
 
 ## 2. จับฉันให้ได้สิ ซ้าย-ขวา-เท่ากับ
 
@@ -41,9 +42,9 @@ output = `237`
 
 ให้เขียนโปรแกรม ภาษา GO เพื่อรับข้อมูลข้อความที่เข้ารหัสแล้ว จาก keyboard (encoded) และให้แปลงกับเป็นตัวเลขชุด ที่มีผลรวมของทุกตัวเลข มีค่าน้อยที่สุดแสดงผลเป็น ตัวเลขชุด ชุดนั้น
 
-Test case:
-input = `LLRR=` output = `210122`
-input = `==RLL` output = `000210`
+# Test case
+- input = `LLRR=` output = `210122`
+- input = `==RLL` output = `000210`
 
 ## 3. พาย ไฟ ได - Pie Fire Dire  
 
