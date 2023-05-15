@@ -45,6 +45,7 @@
 # Test case
 - input = `LLRR=` output = `210122`
 - input = `==RLL` output = `000210`
+- input = `=LLRR` output = `221012`
 
 ## 3. พาย ไฟ ได - Pie Fire Dire  
 
