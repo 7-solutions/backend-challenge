@@ -1,86 +1,103 @@
-# backend-challenge
+# Backend Golang Coding Test
 
-## 1. จงหาเส้นทางที่มีค่ามากที่สุด
+## Objective
+Build a simple RESTful API in Golang that manages a list of users. Use MongoDB for persistence, JWT for authentication, and follow clean code practices.
 
-![Figure 1-1](files/max-path.png)
+---
 
-- ซึ่งจะอยู่ใน Array ดังต่อไปนี้ `[[59], [73, 41], [52, 40, 53], [26, 53, 6, 34]]`
-- โดยเส้นทางที่มีค่ามากที่สุดจะเป็นตามจุดสีแดง
-- แต่ละ node ห้ามย้อนกลับ (ต้องขึ้นลงเป็นทางเดียว) และเชื่อมกัน
-- คำตอบให้อยู่ในรูปของ จำนวนรวมของเส้นทางที่ผ่าน ซึ่งจากตัวอย่างคือ `237`
+## Requirements
 
-ให้เขียนโปรแกรมภาษา GO โดยใช้ input จากไฟล์นี้ <https://github.com/7-solutions/backend-challenge/blob/main/files/hard.json> และแสดงผลเป็นค่าที่ได้จากการคำนวณ
+### 1. User Model
+Each user should have:
+- `ID` (auto-generated)
+- `Name` (string)
+- `Email` (string, unique)
+- `Password` (hashed)
+- `CreatedAt` (timestamp)
 
-# Test case
+---
 
-- input = `[[59], [73, 41], [52, 40, 53], [26, 53, 6, 34]]` output = `237`
-- input = <https://github.com/7-solutions/backend-challenge/blob/main/files/hard.json> output = `7273`
+### 2. Authentication
 
-## 2. จับฉันให้ได้สิ ซ้าย-ขวา-เท่ากับ
+#### Functions
+- Register a new user.
+- Authenticate user and return a JWT.
 
-ให้ถอดรหัสตัวอักษรตามตัวอย่างด้านล่าง
+#### JWT
+- Use JWT for protecting endpoints.
+- Use middleware to validate tokens.
+- Use HMAC (HS256) with a secret key.
 
-```
-สัญลักษณ์ “L” หมายความว่า ตัวเลขด้านซ้าย มีค่ามากกว่า ตัวเลขด้านขวา
-สัญลักษณ์ “R” หมายความว่า ตัวเลขด้านขวา มีค่ามากกว่า ตัวเลขด้านซ้าย
-สัญลักษณ์ “=“ หมายความว่า ตัวเลขด้านซ้าย มีค่าเท่ากับ ตัวเลขด้านขวา
+---
 
-ตัวอย่างเช่น ตัวเลขชุด “410233“ จะเข้ารหัสได้เป็น “LLRR=“
+### 3. User Functions
 
-อธิบายเพิ่มเติม จากตัวเลขชุด “410233“
+- Create a new user.
+- Fetch user by ID.
+- List all users.
+- Update a user's name or email.
+- Delete a user.
 
-เลขคู่แรกคือ 4 และ 1      => ตัวเลขซ้าย (4) มากกว่า ตัวเลขขวา (1)   => “L“
-เลขคู่ถัดมาคือ 1 และ 0   => ตัวเลขซ้าย (1) มากกว่า ตัวเลขขวา (0)   => “L“
-เลขคู่ถัดมาคือ 0 และ 2   => ตัวเลขซ้าย (0) น้อยกว่า ตัวเลขขวา (2)  => “R“
-เลขคู่ถัดมาคือ 2 และ 3   => ตัวเลขซ้าย (2) น้อยกว่า ตัวเลขขวา (3)  => “R“
-เลขคู่ถัดมาคือ 3 และ 3   => ตัวเลขซ้าย (3) เท่ากับ ตัวเลขขวา (3)  => “=“
+---
 
-“LLRR=” สามารถแปลงได้เป็น “410233” หรือ “210122“ ก็ได้ 
-ผลรวมตัวเลขทุกตัวของ 410233 = 4 + 1 + 0 + 2+. 3 + 3 = 13
-ผลรวมตัวเลขทุกตัวของ 210122 = 2 + 1 + 0 + 1 + 2 + 2  = 8
-คำตอบคือ เลขชุด 210122 เนื่องจาก ผลรวมของทุกตัวเลขมีค่าน้อยที่สุด
-```
+### 4. MongoDB Integration
+- Use the official Go MongoDB driver.
+- Store and retrieve users from MongoDB.
 
-ให้เขียนโปรแกรม ภาษา GO เพื่อรับข้อมูลข้อความที่เข้ารหัสแล้ว จาก keyboard (encoded) และให้แปลงกับเป็นตัวเลขชุด ที่มีผลรวมของทุกตัวเลข มีค่าน้อยที่สุดแสดงผลเป็น ตัวเลขชุด ชุดนั้น
+---
 
-# Test case
+### 5. Middleware
+- Logging middleware that logs HTTP method, path, and execution time.
 
-- input = `LLRR=` output = `210122`
-- input = `==RLL` output = `000210`
-- input = `=LLRR` output = `221012`
-- input = `RRL=R` output = `012001`
+---
 
-## 3. พาย ไฟ ได - Pie Fire Dire  
+### 6. Concurrency Task
+- Run a background goroutine every 10 seconds that logs the number of users in the DB.
 
-โจทย์คือ ให้รายชื่อของเนื้อหลายชนิด ปะปนกันเช่น
+---
 
-```Fatback t-bone t-bone, pastrami  ..   t-bone.  pork, meatloaf jowl enim.  Bresaola t-bone.```
+### 7. Testing
+Write unit tests
 
-`ทุกคำเป็นชื่อชนิดเนื้อทั้งหมด` โดยที่ไม่ต้องสนใจ , . หรือ space
+Use Go’s `testing` package. Mock MongoDB where possible.
 
-จงหารายชื่อเนื้อทั้งหมด และระบุจำนวนของเนื้อแต่ละชนิด
+---
 
-ใช้ข้อความจาก <https://baconipsum.com/api/?type=meat-and-filler&paras=99&format=text>
+## Bonus (Optional)
 
-- Your project must use Go, Go module, and HTTP framework (GRPC is plus)
-- You create a JSON API at this endpoint /beef/summary
-- The JSON API must count the number of beef
-- We encourage you to write tests, which we will give you some extra score
-- We will give you an extra score if you focus on performance.
+- Add Docker + `docker-compose` for API + MongoDB.
+- Use Go interfaces to abstract MongoDB operations for testability.
+- Add input validation (e.g., required fields, valid email).
+- Implement graceful shutdown using `context.Context`.
+- **gRPC Version**
+  - Create a `.proto` file for `CreateUser` and `GetUser`.
+  - Implement a gRPC server.
+  - (Optional) Secure gRPC with token metadata.
+- **Hexagonal Architecture**
+  - Structure the project using hexagonal (ports & adapters) architecture:
+    - Separate domain, application, and infrastructure layers.
+    - Use interfaces for data access and external dependencies.
+    - Keep business logic decoupled from frameworks and DB drivers.
 
---- sample response --
+---
 
-```json
-{
-    "beef": {
-        "t-bone": 4,
-        "fatback": 1,
-        "pastrami": 1,
-        "pork": 1,
-        "meatloaf": 1,
-        "jowl": 1,
-        "enim": 1,
-        "bresaola": 1
-    }
-}
-```
+## Submission Guidelines
+
+- Submit a GitHub repo or zip file.
+- Include a `README.md` with:
+  - Project setup and run instructions
+  - JWT token usage guide
+  - Sample API requests/responses
+  - Any assumptions or decisions made
+
+---
+
+## Evaluation Criteria
+
+- Code quality, structure, and readability
+- REST API correctness and completeness
+- JWT implementation and security
+- MongoDB usage and abstraction
+- Bonus: gRPC, Docker, validation, shutdown
+- Testing coverage and mocking
+- Use of idiomatic Go
