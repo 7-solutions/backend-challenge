@@ -1,6 +1,9 @@
 package router
 
 import (
+	"log"
+	"time"
+
 	swagger "github.com/arsmn/fiber-swagger/v2"
 	"github.com/gofiber/fiber/v2"
 	"github.com/testGolang/backend-challenge/application/usecases"
@@ -33,13 +36,13 @@ func Setup(cfg *config.Config, client *mongo.Client) *fiber.App {
 	protected.Delete("/users/:id", userH.Delete)
 
 	//start background goroutine
-	// go func() {
-	// 	ticker := time.NewTicker(10 * time.Second)
-	// 	for range ticker.C {
-	// 		count, _ := userRepo.Count()
-	// 		log.Printf("Total users: %d\n", count)
-	// 	}
-	// }()
+	go func() {
+		ticker := time.NewTicker(10 * time.Second)
+		for range ticker.C {
+			count, _ := userRepo.Count()
+			log.Printf("Total users: %d\n", count)
+		}
+	}()
 
 	return app
 }

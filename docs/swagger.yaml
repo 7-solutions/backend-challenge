@@ -1,5 +1,26 @@
 basePath: /api/v1
 definitions:
+  domain.LoginRequest:
+    properties:
+      email:
+        example: test2@gmail.com
+        type: string
+      password:
+        example: "123456"
+        type: string
+    type: object
+  domain.UpdateUserRequest:
+    properties:
+      email:
+        example: alice.new@example.com
+        type: string
+      name:
+        example: Alice Updated
+        type: string
+      password:
+        example: "123456"
+        type: string
+    type: object
   domain.User:
     properties:
       createdAt:
@@ -23,6 +44,12 @@ paths:
   /users:
     get:
       description: Get a list of all registered users
+      parameters:
+      - description: Bearer {token}
+        in: header
+        name: Authorization
+        required: true
+        type: string
       produces:
       - application/json
       responses:
@@ -39,7 +66,7 @@ paths:
               type: string
             type: object
       security:
-      - bearerAuth: []
+      - BearerAuth: []
       summary: List all users
       tags:
       - users
@@ -62,7 +89,7 @@ paths:
               type: string
             type: object
       security:
-      - bearerAuth: []
+      - BearerAuth: []
       summary: Delete a user
       tags:
       - users
@@ -88,7 +115,7 @@ paths:
               type: string
             type: object
       security:
-      - bearerAuth: []
+      - BearerAuth: []
       summary: Get user by ID
       tags:
       - users
@@ -107,7 +134,7 @@ paths:
         name: updateRequest
         required: true
         schema:
-          type: object
+          $ref: '#/definitions/domain.UpdateUserRequest'
       produces:
       - application/json
       responses:
@@ -122,7 +149,7 @@ paths:
               type: string
             type: object
       security:
-      - bearerAuth: []
+      - BearerAuth: []
       summary: Update user details
       tags:
       - users
@@ -137,7 +164,7 @@ paths:
         name: loginRequest
         required: true
         schema:
-          type: object
+          $ref: '#/definitions/domain.LoginRequest'
       produces:
       - application/json
       responses:
@@ -192,4 +219,9 @@ paths:
       - users
 schemes:
 - http
+securityDefinitions:
+  BearerAuth:
+    in: header
+    name: Authorization
+    type: apiKey
 swagger: "2.0"

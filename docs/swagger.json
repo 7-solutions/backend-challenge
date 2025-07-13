@@ -16,7 +16,7 @@
             "get": {
                 "security": [
                     {
-                        "bearerAuth": []
+                        "BearerAuth": []
                     }
                 ],
                 "description": "Get a list of all registered users",
@@ -27,6 +27,15 @@
                     "users"
                 ],
                 "summary": "List all users",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Bearer {token}",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    }
+                ],
                 "responses": {
                     "200": {
                         "description": "OK",
@@ -69,7 +78,7 @@
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "type": "object"
+                            "$ref": "#/definitions/domain.LoginRequest"
                         }
                     }
                 ],
@@ -151,7 +160,7 @@
             "get": {
                 "security": [
                     {
-                        "bearerAuth": []
+                        "BearerAuth": []
                     }
                 ],
                 "description": "Retrieve a single user by their ID",
@@ -192,7 +201,7 @@
             "put": {
                 "security": [
                     {
-                        "bearerAuth": []
+                        "BearerAuth": []
                     }
                 ],
                 "description": "Update a user’s name or email",
@@ -220,7 +229,7 @@
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "type": "object"
+                            "$ref": "#/definitions/domain.UpdateUserRequest"
                         }
                     }
                 ],
@@ -245,7 +254,7 @@
             "delete": {
                 "security": [
                     {
-                        "bearerAuth": []
+                        "BearerAuth": []
                     }
                 ],
                 "description": "Remove a user by their ID",
@@ -280,6 +289,36 @@
         }
     },
     "definitions": {
+        "domain.LoginRequest": {
+            "type": "object",
+            "properties": {
+                "email": {
+                    "type": "string",
+                    "example": "test2@gmail.com"
+                },
+                "password": {
+                    "type": "string",
+                    "example": "123456"
+                }
+            }
+        },
+        "domain.UpdateUserRequest": {
+            "type": "object",
+            "properties": {
+                "email": {
+                    "type": "string",
+                    "example": "alice.new@example.com"
+                },
+                "name": {
+                    "type": "string",
+                    "example": "Alice Updated"
+                },
+                "password": {
+                    "type": "string",
+                    "example": "123456"
+                }
+            }
+        },
         "domain.User": {
             "type": "object",
             "properties": {
@@ -299,6 +338,13 @@
                     "type": "string"
                 }
             }
+        }
+    },
+    "securityDefinitions": {
+        "BearerAuth": {
+            "type": "apiKey",
+            "name": "Authorization",
+            "in": "header"
         }
     }
 }

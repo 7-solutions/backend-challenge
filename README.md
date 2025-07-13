@@ -1,103 +1,150 @@
-# Backend Golang Coding Test
+1.  **Project setup & run instructions**
 
-## Objective
-Build a simple RESTful API in Golang that manages a list of users. Use MongoDB for persistence, JWT for authentication, and follow clean code practices.
+    ```bash
+    git clone https://github.com/yourorg/backend-challenge.git
+    cd backend-challenge
+    cp .env.example .env          # fill in MONGO_URI, JWT_SECRET
+    go mod download
+    go run main.go
+    ```
 
----
+2.  **JWT token usage guide**
 
-## Requirements
+    To access protected endpoints, you need a JWT token. Follow these steps:
 
-### 1. User Model
-Each user should have:
-- `ID` (auto-generated)
-- `Name` (string)
-- `Email` (string, unique)
-- `Password` (hashed)
-- `CreatedAt` (timestamp)
+    **Step 1: Obtain a JWT token by logging in**
 
----
+    Use the following cURL command (replace credentials as appropriate):
 
-### 2. Authentication
+    ```bash
+    curl -X POST http://localhost:3000/api/v1/users/login \
+      -H 'Content-Type: application/json' \
+      -d '{"email":"test2@gmail.com","password":"123456"}'
+    ```
 
-#### Functions
-- Register a new user.
-- Authenticate user and return a JWT.
+    The response will include a `token` field. Copy the value of this token.
 
-#### JWT
-- Use JWT for protecting endpoints.
-- Use middleware to validate tokens.
-- Use HMAC (HS256) with a secret key.
+    **Step 2: Use the JWT token**
 
----
+    - **In cURL requests:**  
+      Add the following header to your requests:
 
-### 3. User Functions
+      ```
+      Authorization: Bearer <token>
+      ```
 
-- Create a new user.
-- Fetch user by ID.
-- List all users.
-- Update a user's name or email.
-- Delete a user.
+      Example:
 
----
+      ```bash
+      curl -X GET http://localhost:3000/api/v1/users \
+        -H 'Authorization: Bearer <token>'
+      ```
 
-### 4. MongoDB Integration
-- Use the official Go MongoDB driver.
-- Store and retrieve users from MongoDB.
+    - **In Swagger UI:**
+      1. Open Swagger UI in your browser (see section below).
+      2. Click the **Authorize** (lock) icon.
+      3. Enter your token as:
+         ```
+         Bearer <token>
+         ```
+      4. Click "Authorize". Now you can try out protected endpoints.
 
----
+3.  **Sample API requests & responses**
 
-### 5. Middleware
-- Logging middleware that logs HTTP method, path, and execution time.
+    ### Register
 
----
+    ```bash
+    curl -X POST http://localhost:3000/api/v1/users/register \
+      -H 'Content-Type: application/json' \
+      -d '{"name":"Alice","email":"alice@example.com","password":"secret"}'
+    ```
 
-### 6. Concurrency Task
-- Run a background goroutine every 10 seconds that logs the number of users in the DB.
+    **Response** (201):
 
----
+    ```json
+    {
+      "id": "...",
+      "name": "Alice",
+      "email": "alice@example.com",
+      "createdAt": "2025-07-13T..."
+    }
+    ```
 
-### 7. Testing
-Write unit tests
+    ### Login
 
-Use Go’s `testing` package. Mock MongoDB where possible.
+    ```bash
+    curl -X POST http://localhost:3000/api/v1/users/login \
+      -H 'Content-Type: application/json' \
+      -d '{"email":"alice@example.com","password":"secret"}'
+    ```
 
----
+    **Response** (200):
 
-## Bonus (Optional)
+    ```json
+    {
+      "token": "<jwt-token>"
+    }
+    ```
 
-- Add Docker + `docker-compose` for API + MongoDB.
-- Use Go interfaces to abstract MongoDB operations for testability.
-- Add input validation (e.g., required fields, valid email).
-- Implement graceful shutdown using `context.Context`.
-- **gRPC Version**
-  - Create a `.proto` file for `CreateUser` and `GetUser`.
-  - Implement a gRPC server.
-  - (Optional) Secure gRPC with token metadata.
-- **Hexagonal Architecture**
-  - Structure the project using hexagonal (ports & adapters) architecture:
-    - Separate domain, application, and infrastructure layers.
-    - Use interfaces for data access and external dependencies.
-    - Keep business logic decoupled from frameworks and DB drivers.
+    ### Protected endpoints (e.g., List users)
 
----
+    ```bash
+    curl -X GET http://localhost:3000/api/v1/users \
+      -H 'Authorization: Bearer <token>'
+    ```
 
-## Submission Guidelines
+    **Response** (200):
 
-- Submit a GitHub repo or zip file.
-- Include a `README.md` with:
-  - Project setup and run instructions
-  - JWT token usage guide
-  - Sample API requests/responses
-  - Any assumptions or decisions made
+    ```json
+    [
+      {
+        "id": "...",
+        "name": "Alice",
+        "email": "alice@example.com"
+        // ...other fields
+      }
+    ]
+    ```
 
----
+4.  **🛠️ Using Swagger UI**
 
-## Evaluation Criteria
+    The API provides an interactive Swagger UI for exploring and testing endpoints.
 
-- Code quality, structure, and readability
-- REST API correctness and completeness
-- JWT implementation and security
-- MongoDB usage and abstraction
-- Bonus: gRPC, Docker, validation, shutdown
-- Testing coverage and mocking
-- Use of idiomatic Go
+    - **Open Swagger UI:**  
+      Navigate to [http://localhost:3000/swagger/index.html](http://localhost:3000/swagger/index.html) in your browser.
+
+    - **Authorize with JWT:**
+
+      1. Click the **Authorize** (lock) icon at the top right of the Swagger UI.
+      2. In the popup, enter your JWT token prefixed with `Bearer ` (including the space):
+         ```
+         Bearer <token>
+         ```
+      3. Click "Authorize" to save the token for your session.
+
+    - **Try out endpoints:**  
+      Click on any endpoint, then click **"Try it out"**. Fill in any required parameters and click **"Execute"** to make requests directly from the browser, using your authorized token for protected endpoints.
+
+5.  **Architecture Overview**
+    We follow a **hexagonal (ports & adapters)** architecture to keep business logic decoupled from external frameworks:
+    ```
+    .
+    ├── config/                       # load environment and DB configuration
+    ├── domain/                       # domain entities and their validation
+    ├── application/                  # application layer (use-cases / business logic)
+    │   ├── ports/                    # port interfaces (e.g., UserRepository)
+    │   └── usecases/                 # implementation of use-cases
+    ├── infrastructure/               # adapters for external systems
+        ├── logger/                   # log each time when call api in mongoDB
+    │   └── mongo/                    # MongoDB repositories and logging middleware
+    ├── delivery/                     # delivery layer: HTTP handlers, middleware, router
+    │   ├── handlers/                 # Fiber HTTP handlers
+    │   ├── middleware/               # custom middleware (JWT, logging)
+    │   └── router/                   # route definitions
+    ├── docs/                         # auto-generated Swagger/OpenAPI docs
+    ├── tests/                        # unit tests using mock implementations
+    ├── .env                          # environment variable definitions
+    ├── Dockerfile & docker-compose.yml # containerization configurations
+    ├── go.mod & go.sum               # Go module dependencies
+    └── main.go                       #
+    ```

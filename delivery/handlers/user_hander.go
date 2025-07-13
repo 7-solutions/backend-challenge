@@ -3,6 +3,7 @@ package handlers
 import (
 	"github.com/gofiber/fiber/v2"
 	"github.com/testGolang/backend-challenge/application/usecases"
+	"github.com/testGolang/backend-challenge/domain"
 )
 
 type UserHandler struct {
@@ -47,17 +48,14 @@ func (h *UserHandler) Register(c *fiber.Ctx) error {
 // @Tags        users
 // @Accept      json
 // @Produce     json
-// @Param       loginRequest  body      object  true  "Login payload"
+// @Param       loginRequest  body      domain.LoginRequest  true  "Login payload"
 // @Success     200           {object}  map[string]string
 // @Failure     400           {object}  map[string]string
 // @Failure     401           {object}  map[string]string
 // @Router      /users/login [post]
 // Login handles user authentication and returns a JWT token
 func (h *UserHandler) Login(c *fiber.Ctx) error {
-	var body struct {
-		Email    string `json:"email"`
-		Password string `json:"password"`
-	}
+	var body domain.LoginRequest
 	if err := c.BodyParser(&body); err != nil {
 		return c.Status(400).JSON(fiber.Map{"error": "invalid request"})
 	}
@@ -72,7 +70,8 @@ func (h *UserHandler) Login(c *fiber.Ctx) error {
 // @Summary     List all users
 // @Description Get a list of all registered users
 // @Tags        users
-// @Security    bearerAuth
+// @Security    BearerAuth
+// @Param       Authorization  header  string  true  "Bearer {token}"
 // @Produce     json
 // @Success     200 {array} domain.User
 // @Failure     500 {object} map[string]string
@@ -89,7 +88,7 @@ func (h *UserHandler) List(c *fiber.Ctx) error {
 // @Summary     Get user by ID
 // @Description Retrieve a single user by their ID
 // @Tags        users
-// @Security    bearerAuth
+// @Security    BearerAuth
 // @Produce     json
 // @Param       id   path      string  true  "User ID"
 // @Success     200  {object}  domain.User
@@ -108,21 +107,17 @@ func (h *UserHandler) Get(c *fiber.Ctx) error {
 // @Summary     Update user details
 // @Description Update a user’s name or email
 // @Tags        users
-// @Security    bearerAuth
+// @Security    BearerAuth
 // @Accept      json
 // @Produce     json
 // @Param       id            path      string  true  "User ID"
-// @Param       updateRequest body      object  true  "Update payload"
+// @Param       updateRequest body      domain.UpdateUserRequest  true  "Update payload"
 // @Success     200           {object} domain.User
 // @Failure     400           {object} map[string]string
 // @Router      /users/{id} [put]
 func (h *UserHandler) Update(c *fiber.Ctx) error {
 	id := c.Params("id")
-	var body struct {
-		Name     string `json:"name,omitempty"`
-		Email    string `json:"email,omitempty"`
-		Password string `json:"password,omitempty"`
-	}
+	var body domain.UpdateUserRequest
 	if err := c.BodyParser(&body); err != nil {
 		return c.Status(400).JSON(fiber.Map{"error": "invalid request"})
 	}
@@ -137,7 +132,7 @@ func (h *UserHandler) Update(c *fiber.Ctx) error {
 // @Summary     Delete a user
 // @Description Remove a user by their ID
 // @Tags        users
-// @Security    bearerAuth
+// @Security    BearerAuth
 // @Param       id   path      string  true  "User ID"
 // @Success     204  "No Content"
 // @Failure     400  {object} map[string]string

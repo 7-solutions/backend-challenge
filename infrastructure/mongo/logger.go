@@ -16,7 +16,7 @@ func NewLoggingMiddleware(client *mongo.Client, dbName string) fiber.Handler {
 		err := c.Next()
 		duration := time.Since(start)
 
-		coll := client.Database(dbName).Collection("logs")
+		coll := client.Database(dbName).Collection("logger")
 
 		method := c.Method()
 		path := c.Path()

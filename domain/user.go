@@ -14,6 +14,19 @@ type User struct {
 	CreatedAt time.Time `bson:"created_at" json:"createdAt"`
 }
 
+// UpdateUserRequest defines the payload for updating a user
+type UpdateUserRequest struct {
+	Name     string `json:"name,omitempty" example:"Alice Updated"`
+	Email    string `json:"email,omitempty" example:"alice.new@example.com"`
+	Password string `json:"password,omitempty" example:"123456"`
+}
+
+// LoginRequest defines the payload for user login
+type LoginRequest struct {
+	Email    string `json:"email" example:"test2@gmail.com"`
+	Password string `json:"password" example:"123456"`
+}
+
 func (u *User) Validate() error {
 	if u.Name == "" {
 		return errors.New("name is required")
