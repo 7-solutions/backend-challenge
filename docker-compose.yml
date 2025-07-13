@@ -1,0 +1,24 @@
+version: '3.8'
+services:
+  mongo:
+    image: mongo:6
+    restart: always
+    ports:
+      - '27017:27017'
+    volumes:
+      - mongodata:/data/db
+
+  api:
+    build: .
+    depends_on:
+      - mongo
+    ports:
+      - '3000:3000'
+    environment:
+      MONGO_URI: 'mongodb+srv://changmaichali:ybQs2PVMWeQllzgJ@cluster0.bfh3dgd.mongodb.net/backend_challenge?retryWrites=true&w=majority'
+      MONGO_DB: backend_challenge
+      JWT_SECRET: 7hunter
+      SERVER_ADDR: :3000
+
+volumes:
+  mongodata:

@@ -1,0 +1,4 @@
+{
+  "go.testFlags": ["-v"],
+  "go.testOnSave": false
+}

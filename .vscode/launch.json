@@ -1,0 +1,7 @@
+{
+  "name": "Launch API",
+  "type": "go",
+  "request": "launch",
+  "program": "${workspaceFolder}/cmd/server",
+  "envFile": "${workspaceFolder}/.env"
+}
