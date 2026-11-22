@@ -110,3 +110,35 @@ func SuccessWithPagination(c *gin.Context, data interface{}, pagination *Paginat
 		Timestamp: time.Now().Format(time.RFC3339),
 	})
 }
+
+// SuccessCreated writes a standard HTTP 201 response with data payload, request
+// metadata, and RFC3339 timestamp.
+func SuccessCreated(c *gin.Context, data interface{}) {
+
+	requestId := c.GetString(constants.RequestIdKey)
+	if requestId != "" {
+		c.Writer.Header().Set(constants.RequestIdHeader, requestId)
+	}
+
+	correlationId := c.GetString(constants.CorrelationIdKey)
+	if correlationId != "" {
+		c.Writer.Header().Set(constants.CorrelationIdHeader, correlationId)
+	}
+
+	traceId := c.GetString(constants.TraceIdKey)
+	if traceId != "" {
+		c.Writer.Header().Set(constants.TraceIdHeader, traceId)
+	}
+
+	c.JSON(http.StatusCreated, SuccessResponse[interface{}]{
+		Code:    http.StatusCreated,
+		Message: "Created",
+		Data:    data,
+		Meta: &Meta{
+			RequestID:     requestId,
+			CorrelationID: correlationId,
+			TraceID:       traceId,
+		},
+		Timestamp: time.Now().Format(time.RFC3339),
+	})
+}

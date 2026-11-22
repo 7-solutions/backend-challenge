@@ -39,7 +39,7 @@ type ProblemDetails interface {
 	Write(c *gin.Context)
 }
 
-type problemDetails struct {
+type ProblemDetailsResponse struct {
 	Type          string      `json:"type"`
 	Title         string      `json:"title"`
 	Status        int         `json:"status"`
@@ -52,30 +52,30 @@ type problemDetails struct {
 	Err           error       `json:"-"`
 }
 
-func (p *problemDetails) GetTitle() string         { return p.Title }
-func (p *problemDetails) GetStatus() int           { return p.Status }
-func (p *problemDetails) GetInstance() string      { return p.Instance }
-func (p *problemDetails) GetDetail() string        { return p.Detail }
-func (p *problemDetails) GetErrors() interface{}   { return p.Errors }
-func (p *problemDetails) GetRequestID() string     { return p.RequestID }
-func (p *problemDetails) GetCorrelationID() string { return p.CorrelationID }
-func (p *problemDetails) GetTraceId() string       { return p.TraceId }
+func (p *ProblemDetailsResponse) GetTitle() string         { return p.Title }
+func (p *ProblemDetailsResponse) GetStatus() int           { return p.Status }
+func (p *ProblemDetailsResponse) GetInstance() string      { return p.Instance }
+func (p *ProblemDetailsResponse) GetDetail() string        { return p.Detail }
+func (p *ProblemDetailsResponse) GetErrors() interface{}   { return p.Errors }
+func (p *ProblemDetailsResponse) GetRequestID() string     { return p.RequestID }
+func (p *ProblemDetailsResponse) GetCorrelationID() string { return p.CorrelationID }
+func (p *ProblemDetailsResponse) GetTraceId() string       { return p.TraceId }
 
-func (p *problemDetails) Unwrap() error { return p.Err }
+func (p *ProblemDetailsResponse) Unwrap() error { return p.Err }
 
-func (p *problemDetails) Error() string {
+func (p *ProblemDetailsResponse) Error() string {
 	if p.Err != nil {
 		return p.Detail + ": " + p.Err.Error()
 	}
 	return p.Detail
 }
 
-func (p *problemDetails) JSON() []byte {
+func (p *ProblemDetailsResponse) JSON() []byte {
 	b, _ := json.Marshal(p)
 	return b
 }
 
-func (p *problemDetails) Write(c *gin.Context) {
+func (p *ProblemDetailsResponse) Write(c *gin.Context) {
 	if c.Writer.Written() {
 		return
 	}

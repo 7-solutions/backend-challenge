@@ -86,3 +86,4 @@ swagger/
 *_mock.go
 *.gen.go
 generated/
+app/docs/*

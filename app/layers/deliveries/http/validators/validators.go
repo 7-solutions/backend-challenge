@@ -57,12 +57,12 @@ func MapValidationErrorsSlice(err error) []FieldErrorItem {
 		return out
 	}
 
-	var verrs validator.ValidationErrors
-	if !errors.As(err, &verrs) {
+	var vars validator.ValidationErrors
+	if !errors.As(err, &vars) {
 		return out
 	}
 
-	for _, fe := range verrs {
+	for _, fe := range vars {
 		out = append(out, FieldErrorItem{
 			Field:   fieldPath(fe),
 			Message: validationMessage(fe),

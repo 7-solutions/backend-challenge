@@ -14,7 +14,7 @@ func New(ginEngin *gin.Engine, authUseCase _auth.UseCase) {
 		authUseCase: authUseCase,
 	}
 
-	auth := ginEngin.Group("/auth")
+	auth := ginEngin.Group("/api/auth")
 	{
 		auth.POST("/login", h.Login)
 	}

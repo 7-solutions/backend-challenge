@@ -19,17 +19,18 @@ type MongoConfig struct {
 
 func NewMongoClient(ctx context.Context, cfg MongoConfig) (*mongo.Client, error) {
 
-	credential := options.Credential{
-		Username:   cfg.User,
-		Password:   cfg.Password,
-		AuthSource: cfg.DB,
-	}
-
 	clientOptions := options.Client().
 		ApplyURI(cfg.URL).
-		SetAuth(credential).
 		SetServerSelectionTimeout(cfg.Timeout).
 		SetConnectTimeout(cfg.Timeout)
+
+	if cfg.User != "" {
+		clientOptions.SetAuth(options.Credential{
+			Username:   cfg.User,
+			Password:   cfg.Password,
+			AuthSource: cfg.DB,
+		})
+	}
 
 	client, err := mongo.Connect(clientOptions)
 	if err != nil {

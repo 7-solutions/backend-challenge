@@ -21,12 +21,13 @@ func NewBadRequest(detail string, err ...error) ProblemDetails {
 			fields[item.Field] = item.Message
 		}
 
-		if validation, ok := errors.AsType[*apperrors.ValidationError](rootErr); ok {
+		var validation *apperrors.ValidationError
+		if errors.As(rootErr, &validation) {
 			fields = validation.Fields
 		}
 	}
 
-	return &problemDetails{
+	return &ProblemDetailsResponse{
 		Type:   problemType("bad-request"),
 		Title:  "Bad Request",
 		Status: 400,
@@ -38,7 +39,7 @@ func NewBadRequest(detail string, err ...error) ProblemDetails {
 
 // NewUnauthorized returns a 401 Unauthorized ProblemDetails.
 func NewUnauthorized(detail string, err ...error) ProblemDetails {
-	return &problemDetails{
+	return &ProblemDetailsResponse{
 		Type:   problemType("unauthorized"),
 		Title:  "Unauthorized",
 		Status: 401,
@@ -49,7 +50,7 @@ func NewUnauthorized(detail string, err ...error) ProblemDetails {
 
 // NewForbidden returns a 403 Forbidden ProblemDetails.
 func NewForbidden(detail string, err ...error) ProblemDetails {
-	return &problemDetails{
+	return &ProblemDetailsResponse{
 		Type:   problemType("forbidden"),
 		Title:  "Forbidden",
 		Status: 403,
@@ -60,7 +61,7 @@ func NewForbidden(detail string, err ...error) ProblemDetails {
 
 // NewNotFound returns a 404 Not Found ProblemDetails.
 func NewNotFound(detail string, err ...error) ProblemDetails {
-	return &problemDetails{
+	return &ProblemDetailsResponse{
 		Type:   problemType("not-found"),
 		Title:  "Not Found",
 		Status: 404,
@@ -71,7 +72,7 @@ func NewNotFound(detail string, err ...error) ProblemDetails {
 
 // NewMethodNotAllowed returns a 405 Method Not Allowed ProblemDetails.
 func NewMethodNotAllowed(detail string, err ...error) ProblemDetails {
-	return &problemDetails{
+	return &ProblemDetailsResponse{
 		Type:   problemType("method-not-allowed"),
 		Title:  "Method Not Allowed",
 		Status: 405,
@@ -82,7 +83,7 @@ func NewMethodNotAllowed(detail string, err ...error) ProblemDetails {
 
 // NewConflict returns a 409 Conflict ProblemDetails.
 func NewConflict(detail string, err ...error) ProblemDetails {
-	return &problemDetails{
+	return &ProblemDetailsResponse{
 		Type:   problemType("conflict"),
 		Title:  "Conflict",
 		Status: 409,
@@ -93,7 +94,7 @@ func NewConflict(detail string, err ...error) ProblemDetails {
 
 // NewInternal returns a 500 Internal Server Error ProblemDetails.
 func NewInternal(detail string, err ...error) ProblemDetails {
-	return &problemDetails{
+	return &ProblemDetailsResponse{
 		Type:   problemType("internal-server-error"),
 		Title:  "Internal Server Error",
 		Status: 500,
@@ -104,7 +105,7 @@ func NewInternal(detail string, err ...error) ProblemDetails {
 
 // NewNotImplemented returns a 501 Not Implemented ProblemDetails.
 func NewNotImplemented(detail string, err ...error) ProblemDetails {
-	return &problemDetails{
+	return &ProblemDetailsResponse{
 		Type:   problemType("not-implemented"),
 		Title:  "Not Implemented",
 		Status: 501,
@@ -115,7 +116,7 @@ func NewNotImplemented(detail string, err ...error) ProblemDetails {
 
 // NewBadGateway returns a 502 Bad Gateway ProblemDetails.
 func NewBadGateway(detail string, err ...error) ProblemDetails {
-	return &problemDetails{
+	return &ProblemDetailsResponse{
 		Type:   problemType("bad-gateway"),
 		Title:  "Bad Gateway",
 		Status: 502,

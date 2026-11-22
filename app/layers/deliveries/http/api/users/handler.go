@@ -15,7 +15,7 @@ func New(ginEngin *gin.Engine, usersUseCase _users.UseCase, authMiddleware middl
 		usersUseCase: usersUseCase,
 	}
 
-	api := ginEngin.Group("/users").Use(authMiddleware.Auth)
+	api := ginEngin.Group("/api/users").Use(authMiddleware.Auth)
 	{
 		api.GET("", h.FindUser)
 		api.POST("", h.CreateUser)

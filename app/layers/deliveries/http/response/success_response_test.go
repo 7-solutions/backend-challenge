@@ -131,3 +131,53 @@ func TestSuccessWithPagination(t *testing.T) {
 		t.Fatalf("unexpected data length: %d", len(data))
 	}
 }
+
+func TestSuccessCreated(t *testing.T) {
+	t.Parallel()
+
+	c, w := newResponseTestContext(t)
+	c.Set(constants.RequestIdKey, "req-789")
+	c.Set(constants.CorrelationIdKey, "corr-789")
+	c.Set(constants.TraceIdKey, "trace-789")
+
+	response.SuccessCreated(c, map[string]string{"name": "alice"})
+
+	if got := w.Code; got != http.StatusCreated {
+		t.Fatalf("expected status %d, got %d", http.StatusCreated, got)
+	}
+	if w.Header().Get("Location") != "" {
+		t.Fatalf("expected empty Location header, got %s", w.Header().Get("Location"))
+	}
+
+	var body response.SuccessResponse[interface{}]
+	if err := json.Unmarshal(w.Body.Bytes(), &body); err != nil {
+		t.Fatalf("failed to decode body: %v", err)
+	}
+
+	if body.Code != http.StatusCreated {
+		t.Fatalf("unexpected code: %d", body.Code)
+	}
+	if body.Message != "Created" {
+		t.Fatalf("unexpected message: %s", body.Message)
+	}
+	if body.Meta == nil {
+		t.Fatal("expected meta")
+	}
+	if body.Meta.RequestID != "req-789" {
+		t.Fatalf("unexpected request id: %s", body.Meta.RequestID)
+	}
+	if body.Meta.CorrelationID != "corr-789" {
+		t.Fatalf("unexpected correlation id: %s", body.Meta.CorrelationID)
+	}
+	if _, err := time.Parse(time.RFC3339, body.Timestamp); err != nil {
+		t.Fatalf("timestamp is not RFC3339: %v", err)
+	}
+
+	data, ok := body.Data.(map[string]interface{})
+	if !ok {
+		t.Fatalf("expected map data, got %T", body.Data)
+	}
+	if got := data["name"]; got != "alice" {
+		t.Fatalf("unexpected data name: %v", got)
+	}
+}
