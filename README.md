@@ -11,6 +11,8 @@ Choose one of the following ways to run the application:
 
 Git is useful for cloning the repository. No separate Node.js, `protoc`, or Go code-generation tools are needed to run the application; generated protobuf and Swagger files are already included.
 
+Swagger documentation is generated during the Docker image build from the annotations in `app/cmd/server` and `app/layers/deliveries/http/swagger_docs`. To regenerate it locally after changing API annotations, run `make swag` from the repository root.
+
 ### Option A: Docker Compose
 
 From the repository root, run:
@@ -68,6 +70,8 @@ Swagger UI is then available at `http://localhost:8080/api/swagger/index.html`.
 
 ### Quick API check
 
+See [docs/JWT_GUIDE.md](docs/JWT_GUIDE.md) for how to configure the signing key, obtain a token, and call protected endpoints.
+
 Check that the API is up:
 
 ```sh
@@ -77,7 +81,7 @@ curl http://localhost:8080/api/health
 Create a user (registration does not require a token):
 
 ```sh
-curl -X POST http://localhost:8080/api/users \
+curl -X POST http://localhost:8080/api/auth/register \
   -H 'Content-Type: application/json' \
   -d '{"name":"Jane Doe","email":"jane@example.com","password":"secret123"}'
 ```
@@ -97,7 +101,7 @@ curl http://localhost:8080/api/users \
   -H 'Authorization: Bearer <JWT_TOKEN>'
 ```
 
-User routes are `GET /api/users`, `POST /api/users`, `GET /api/users/:id`, `PUT /api/users/:id`, and `DELETE /api/users/:id`. Login is `POST /api/auth/login` and health check is `GET /api/health`.
+User routes are `GET /api/users`, `POST /api/users`, `GET /api/users/:id`, `PUT /api/users/:id`, and `DELETE /api/users/:id`. Auth routes are `POST /api/auth/register` and `POST /api/auth/login`; health check is `GET /api/health`. `POST /api/users` remains as a public registration alias.
 
 Successful requests use a JSON envelope. A registration response looks like this (the ID and timestamp are generated):
 
@@ -129,7 +133,7 @@ Login returns the JWT string in `data`:
 
 ### API assumptions and design decisions
 
-- Registration (`POST /api/users`) and login are public. All user listing, lookup, update, and delete routes require `Authorization: Bearer <JWT_TOKEN>`.
+- Registration (`POST /api/auth/register` or the legacy `POST /api/users` alias) and login are public. All user listing, lookup, update, and delete routes require `Authorization: Bearer <JWT_TOKEN>`.
 - User IDs are MongoDB ObjectIDs represented as 24-character hexadecimal strings. Passwords are bcrypt-hashed and never included in user responses.
 - Email uniqueness is enforced by a unique MongoDB index as well as an application-level check. Duplicate registrations return a conflict response, including concurrent attempts.
 - Updates require both `name` and `email`; password changes are outside this API's scope. User list filters accept optional `name` and `email` query parameters.

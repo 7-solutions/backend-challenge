@@ -116,7 +116,7 @@ func run(logger *slog.Logger) error {
 
 	_healthhttp.NewHandler(ginEngine)
 
-	_authhttp.New(ginEngine, authUseCase)
+	_authhttp.New(ginEngine, authUseCase, userUseCase)
 
 	_usershttp.New(ginEngine, userUseCase, middlewares.NewAuth(authUseCase))
 

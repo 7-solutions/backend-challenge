@@ -15,12 +15,14 @@ func New(ginEngin *gin.Engine, usersUseCase _users.UseCase, authMiddleware middl
 		usersUseCase: usersUseCase,
 	}
 
-	api := ginEngin.Group("/api/users").Use(authMiddleware.Auth)
+	api := ginEngin.Group("/api/users")
+	api.POST("", h.CreateUser)
+
+	protected := api.Group("").Use(authMiddleware.Auth)
 	{
-		api.GET("", h.FindUser)
-		api.POST("", h.CreateUser)
-		api.PUT("/:id", h.UpdateUser)
-		api.GET("/:id", h.FindOneUser)
-		api.DELETE("/:id", h.DeleteUser)
+		protected.GET("", h.FindUser)
+		protected.PUT("/:id", h.UpdateUser)
+		protected.GET("/:id", h.FindOneUser)
+		protected.DELETE("/:id", h.DeleteUser)
 	}
 }

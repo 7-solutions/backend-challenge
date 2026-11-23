@@ -12,6 +12,7 @@ import (
 	middlewares "github.com/chaihanij/backend-challenge/app/layers/deliveries/http/middlewares"
 	"github.com/chaihanij/backend-challenge/app/layers/deliveries/http/response"
 	mocksAuthUseCase "github.com/chaihanij/backend-challenge/app/mocks/auth"
+	mocksUsersUseCase "github.com/chaihanij/backend-challenge/app/mocks/users"
 	"github.com/gin-gonic/gin"
 	"go.uber.org/mock/gomock"
 )
@@ -20,12 +21,12 @@ func TestHandler_Login(t *testing.T) {
 	t.Parallel()
 	gin.SetMode(gin.TestMode)
 
-	newRequest := func(t *testing.T, mockAuthUseCase *mocksAuthUseCase.MockUseCase, body string) *httptest.ResponseRecorder {
+	newRequest := func(t *testing.T, mockAuthUseCase *mocksAuthUseCase.MockUseCase, mockUsersUseCase *mocksUsersUseCase.MockUseCase, body string) *httptest.ResponseRecorder {
 		t.Helper()
 
 		engine := gin.New()
 		engine.Use(middlewares.ErrorHandler())
-		authapi.New(engine, mockAuthUseCase)
+		authapi.New(engine, mockAuthUseCase, mockUsersUseCase)
 
 		request := httptest.NewRequest(http.MethodPost, "/api/auth/login", bytes.NewBufferString(body))
 		request.Header.Set("Content-Type", "application/json")
@@ -37,9 +38,10 @@ func TestHandler_Login(t *testing.T) {
 	t.Run("returns JWT token when credentials are valid", func(t *testing.T) {
 		ctrl := gomock.NewController(t)
 		mockAuthUseCase := mocksAuthUseCase.NewMockUseCase(ctrl)
+		mockUsersUseCase := mocksUsersUseCase.NewMockUseCase(ctrl)
 		mockAuthUseCase.EXPECT().Login(gomock.Any(), "jane@example.com", "secret123").Return(stringPointer("jwt-token"), nil)
 
-		res := newRequest(t, mockAuthUseCase, `{"email":"jane@example.com","password":"secret123"}`)
+		res := newRequest(t, mockAuthUseCase, mockUsersUseCase, `{"email":"jane@example.com","password":"secret123"}`)
 
 		if res.Code != http.StatusOK {
 			t.Fatalf("expected status %d, got %d: %s", http.StatusOK, res.Code, res.Body.String())
@@ -57,9 +59,10 @@ func TestHandler_Login(t *testing.T) {
 	t.Run("rejects invalid request without calling use case", func(t *testing.T) {
 		ctrl := gomock.NewController(t)
 		mockAuthUseCase := mocksAuthUseCase.NewMockUseCase(ctrl)
+		mockUsersUseCase := mocksUsersUseCase.NewMockUseCase(ctrl)
 		mockAuthUseCase.EXPECT().Login(gomock.Any(), gomock.Any(), gomock.Any()).Times(0)
 
-		res := newRequest(t, mockAuthUseCase, `{"email":"bad-email","password":"123"}`)
+		res := newRequest(t, mockAuthUseCase, mockUsersUseCase, `{"email":"bad-email","password":"123"}`)
 
 		if res.Code != http.StatusBadRequest {
 			t.Fatalf("expected status %d, got %d: %s", http.StatusBadRequest, res.Code, res.Body.String())
@@ -72,9 +75,10 @@ func TestHandler_Login(t *testing.T) {
 	t.Run("returns error response when use case fails", func(t *testing.T) {
 		ctrl := gomock.NewController(t)
 		mockAuthUseCase := mocksAuthUseCase.NewMockUseCase(ctrl)
+		mockUsersUseCase := mocksUsersUseCase.NewMockUseCase(ctrl)
 		mockAuthUseCase.EXPECT().Login(gomock.Any(), "jane@example.com", "secret123").Return(nil, errors.New("login failed"))
 
-		res := newRequest(t, mockAuthUseCase, `{"email":"jane@example.com","password":"secret123"}`)
+		res := newRequest(t, mockAuthUseCase, mockUsersUseCase, `{"email":"jane@example.com","password":"secret123"}`)
 
 		if res.Code != http.StatusInternalServerError {
 			t.Fatalf("expected status %d, got %d: %s", http.StatusInternalServerError, res.Code, res.Body.String())

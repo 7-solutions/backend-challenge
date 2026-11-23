@@ -1,0 +1,8 @@
+.git
+.github
+.idea
+.vscode
+coverage.out
+tmp
+*.log
+
