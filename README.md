@@ -67,10 +67,11 @@ go run ./app/cmd/server
 ```
 
 Swagger UI is then available at `http://localhost:8080/api/swagger/index.html`.
+Use Swagger UI to explore the API endpoints and send test requests while the server is running with `DEBUG_MODE=true`.
 
 ### Quick API check
 
-See [docs/JWT_GUIDE.md](docs/JWT_GUIDE.md) for how to configure the signing key, obtain a token, and call protected endpoints.
+The examples below show how to register, log in, and use the returned JWT with protected endpoints. Configure `JWT_SECRET` before running outside local development.
 
 Check that the API is up:
 
@@ -160,6 +161,11 @@ make coverage
 
 The coverage command writes `coverage.out` and prints per-function coverage to the terminal.
 
+### Other services
+
+- **gRPC:** The server listens on port `50051` and implements `users.v1.UserService` with `CreateUser` and `GetUser`. The service definition is in [proto/users/v1/user_service.proto](proto/users/v1/user_service.proto); generated Go code is already included.
+- **Background worker:** A worker logs the total user count every 10 seconds while the server is running. It stops with the application context during shutdown.
+
 ---
 
 ## Overview
@@ -170,6 +176,8 @@ This coding test has two parts.
 | --- | --- | --- |
 | User Management API | Build a Golang user management API with MongoDB and JWT authentication | Code implementation |
 | Lottery Search System | Design a real-world lottery ticket search solution with wildcard matching | Design proposal only (no code) |
+
+The full lottery system proposal is in [Lottery-Search-System-MongoDB-Design.md](Lottery-Search-System-MongoDB-Design.md).
 
 ## User Management API
 
