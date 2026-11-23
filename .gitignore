@@ -1,0 +1,90 @@
+# ============================
+# Go build artifacts
+# ============================
+bin/
+build/
+dist/
+out/
+*.exe
+*.exe~
+*.dll
+*.so
+*.dylib
+*.test
+
+# ============================
+# Go cache & module
+# ============================
+# Go build cache (local)
+*.cache/
+**/.cache/
+
+# Go module download cache
+pkg/mod/
+pkg/sumdb/
+
+# ============================
+# Vendor (ถ้าไม่ได้ commit vendor)
+# ============================
+vendor/
+
+# ============================
+# Coverage & test output
+# ============================
+coverage.out
+coverage/
+*.coverprofile
+*.cov
+*.prof
+
+# ============================
+# Logs
+# ============================
+*.log
+logs/
+log/
+
+# ============================
+# IDE / Editor
+# ============================
+# VS Code
+.vscode/
+*.code-workspace
+
+# JetBrains / GoLand
+.idea/
+
+# Sublime
+*.sublime-workspace
+*.sublime-project
+
+# ============================
+# OS junk
+# ============================
+.DS_Store
+Thumbs.db
+
+# ============================
+# Docker
+# ============================
+# Docker build cache
+**/.docker/
+**/.dockerignore-local
+
+# ============================
+# Swagger / Generated files
+# ============================
+docs/swagger/
+swagger/
+*.swagger.json
+*.swagger.yaml
+
+# ============================
+# Generated code (protobuf, mock, etc.)
+# ============================
+*.pb.go
+!app/gen/proto/users/v1/*.pb.go
+*_mock.go
+*.gen.go
+generated/
+app/docs/*
