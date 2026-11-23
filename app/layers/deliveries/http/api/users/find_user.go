@@ -11,8 +11,8 @@ import (
 
 func (h *handler) FindUser(c *gin.Context) {
 	var req struct {
-		Email *string `form:"email" binding:"email,max=255,min=3,format=email"`
-		Name  *string `form:"name" binding:"min=3"`
+		Email *string `form:"email" binding:"omitempty,email,max=255,min=3"`
+		Name  *string `form:"name" binding:"omitempty,min=3"`
 	}
 
 	if err := c.ShouldBindQuery(&req); err != nil {

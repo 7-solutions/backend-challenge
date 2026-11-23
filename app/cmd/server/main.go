@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 	"log/slog"
+	"net"
 	"net/http"
 	"os"
 	"os/signal"
@@ -13,6 +14,8 @@ import (
 	"github.com/chaihanij/backend-challenge/app/config"
 	"github.com/chaihanij/backend-challenge/app/database"
 	"github.com/chaihanij/backend-challenge/app/docs"
+	usersv1 "github.com/chaihanij/backend-challenge/app/gen/proto/users/v1"
+	_usersgrpc "github.com/chaihanij/backend-challenge/app/layers/deliveries/grpc/users"
 	_authhttp "github.com/chaihanij/backend-challenge/app/layers/deliveries/http/api/auth"
 	_healthhttp "github.com/chaihanij/backend-challenge/app/layers/deliveries/http/api/health"
 	_usershttp "github.com/chaihanij/backend-challenge/app/layers/deliveries/http/api/users"
@@ -23,6 +26,7 @@ import (
 	_usersusecase "github.com/chaihanij/backend-challenge/app/layers/usecases/users"
 	"github.com/chaihanij/backend-challenge/app/util/slogx"
 	"github.com/gin-gonic/gin"
+	"google.golang.org/grpc"
 
 	swaggerfiles "github.com/swaggo/files"
 	ginSwagger "github.com/swaggo/gin-swagger"
@@ -40,6 +44,35 @@ func main() {
 		logger.Error("server stopped with error", slog.Any("error", err))
 		os.Exit(1)
 	}
+}
+
+func startHTTPServer(server *http.Server, logger *slog.Logger, serveErr chan<- error) {
+	go func() {
+		logger.Info("HTTP server listening", slog.String("address", server.Addr))
+		if err := server.ListenAndServe(); err != nil && !errors.Is(err, http.ErrServerClosed) {
+			serveErr <- err
+		}
+	}()
+}
+
+func startGRPCServer(address string, service usersv1.UserServiceServer, logger *slog.Logger, serveErr chan<- error) (*grpc.Server, error) {
+	listener, err := net.Listen("tcp", address)
+	if err != nil {
+		return nil, err
+	}
+	server := grpc.NewServer()
+	usersv1.RegisterUserServiceServer(server, service)
+	go func() {
+		logger.Info("gRPC server listening", slog.String("address", listener.Addr().String()))
+		if err := server.Serve(listener); err != nil {
+			serveErr <- err
+		}
+	}()
+	return server, nil
+}
+
+func startWorkers(ctx context.Context, userUseCase _usersusecase.UseCase, logger *slog.Logger) {
+	workers.StartUserCountLogger(ctx, userUseCase, logger)
 }
 
 func run(logger *slog.Logger) error {
@@ -99,15 +132,13 @@ func run(logger *slog.Logger) error {
 		ReadHeaderTimeout: 5 * time.Second,
 	}
 
-	workers.StartUserCountLogger(ctx, userUseCase, logger)
-
-	serveErr := make(chan error, 1)
-	go func() {
-		logger.Info("HTTP server listening", slog.String("address", server.Addr))
-		if err := server.ListenAndServe(); err != nil && !errors.Is(err, http.ErrServerClosed) {
-			serveErr <- err
-		}
-	}()
+	serveErr := make(chan error, 2)
+	startHTTPServer(server, logger, serveErr)
+	grpcServer, err := startGRPCServer(":50051", _usersgrpc.NewService(userUseCase), logger, serveErr)
+	if err != nil {
+		return err
+	}
+	startWorkers(ctx, userUseCase, logger)
 
 	select {
 	case err := <-serveErr:
@@ -117,6 +148,7 @@ func run(logger *slog.Logger) error {
 
 	shutdownCtx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
+	grpcServer.GracefulStop()
 	if err := server.Shutdown(shutdownCtx); err != nil {
 		return err
 	}

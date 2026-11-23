@@ -5,6 +5,7 @@ services:
       dockerfile: Dockerfile
     ports:
       - "8080:8080"
+      - "50051:50051"
     environment:
       DEBUG_MODE: "true"
       MONGODB_URL: mongodb://mongo:27017

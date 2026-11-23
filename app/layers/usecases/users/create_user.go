@@ -9,6 +9,7 @@ import (
 	"github.com/chaihanij/backend-challenge/app/entities"
 	customerrors "github.com/chaihanij/backend-challenge/app/errors"
 	"github.com/chaihanij/backend-challenge/app/util/pointer"
+	"go.mongodb.org/mongo-driver/v2/mongo"
 )
 
 func (u *useCase) CreateUser(ctx context.Context, input *entities.User) (*entities.User, error) {
@@ -22,7 +23,8 @@ func (u *useCase) CreateUser(ctx context.Context, input *entities.User) (*entiti
 
 	if err != nil {
 		u.logCreateUserEvent(ctx, "request_failed", input.Email, "db_error", start)
-		slog.ErrorContext(ctx, "failed to find user on command create_user", slog.Any("input", input))
+		slog.ErrorContext(ctx, "failed to find user on command create_user",
+			slog.String("email", input.Email), slog.Any("error", err))
 		return nil, err
 	}
 
@@ -37,7 +39,14 @@ func (u *useCase) CreateUser(ctx context.Context, input *entities.User) (*entiti
 	result, err := u.usersRepo.CreateUser(ctx, input)
 	if err != nil {
 		u.logCreateUserEvent(ctx, "request_failed", input.Email, "db_error", start)
-		slog.ErrorContext(ctx, "failed to create user on command create_user", slog.Any("input", input))
+		slog.ErrorContext(ctx, "failed to create user on command create_user",
+			slog.String("email", input.Email), slog.Any("error", err))
+		if mongo.IsDuplicateKeyError(err) {
+			return nil, customerrors.NewConflictError(
+				"users",
+				fmt.Sprintf("email: %s user with this email already exists", input.Email),
+			)
+		}
 		return nil, err
 	}
 

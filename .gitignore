@@ -83,6 +83,7 @@ swagger/
 # Generated code (protobuf, mock, etc.)
 # ============================
 *.pb.go
+!app/gen/proto/users/v1/*.pb.go
 *_mock.go
 *.gen.go
 generated/

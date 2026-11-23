@@ -16,7 +16,7 @@ func (u *useCase) ValidateToken(ctx context.Context, accessToken string) (*strin
 
 	token, err := jwt.Parse(accessToken, func(t *jwt.Token) (interface{}, error) {
 
-		if _, ok := t.Method.(*jwt.SigningMethodHMAC); !ok {
+		if t.Method != jwt.SigningMethodHS256 {
 
 			u.logValidateTokenEvent(ctx, "request_failed", "invalid_signing_method", start)
 			return false, fmt.Errorf("unexpected signing method: %v", t.Header["alg"])

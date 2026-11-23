@@ -1,0 +1,36 @@
+syntax = "proto3";
+
+package users.v1;
+
+option go_package = "github.com/chaihanij/backend-challenge/app/gen/proto/users/v1;usersv1";
+
+// UserService provides operations for creating and retrieving users.
+service UserService {
+  rpc CreateUser(CreateUserRequest) returns (CreateUserResponse);
+  rpc GetUser(GetUserRequest) returns (GetUserResponse);
+}
+
+message CreateUserRequest {
+  string name = 1;
+  string email = 2;
+  string password = 3;
+}
+
+message CreateUserResponse {
+  User user = 1;
+}
+
+message GetUserRequest {
+  string id = 1;
+}
+
+message GetUserResponse {
+  User user = 1;
+}
+
+// User contains the public user fields returned by the service.
+message User {
+  string id = 1;
+  string name = 2;
+  string email = 3;
+}
